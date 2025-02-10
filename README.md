@@ -51,7 +51,7 @@ To run the code locally, you can use the following commands:
 ```bash
 # install dependencies
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y libopenmpi-dev python3 python3-pip
+sudo apt install -y libopenmpi-dev python3 python3-dev python3-pip
 # create a virtual environment
 python3 -m venv venv
 # activate the virtual environment
