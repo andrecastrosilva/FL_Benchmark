@@ -35,7 +35,7 @@ class MLUtils(ABC):
         self.optimizer_name = optimizer
         self.loss = loss
         self.loss_name = loss
-        self.learning_rate = learning_rate
+        self.learning_rate = float(learning_rate)
         self.batch_size = int(batch_size)
         self.setup()
         self.model = model.get_model(self.prefix, self.dataset)

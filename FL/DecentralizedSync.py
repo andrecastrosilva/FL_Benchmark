@@ -1,4 +1,5 @@
 from Utils.FLUtils import FLUtils
+import requests # WebInterface
 
 class DecentralizedSync(FLUtils):
     
@@ -7,7 +8,7 @@ class DecentralizedSync(FLUtils):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.local_epochs = local_epochs
+        self.local_epochs = int(local_epochs)
         self.base_path += f'/{self.local_epochs}'
 
 
@@ -32,7 +33,11 @@ class DecentralizedSync(FLUtils):
 
 
     def master_train(self):
-        
+
+        data: dict = {'benchmarkProgressBarMaxValue': self.epochs,
+                      'benchmarkProgressBar': 0,
+                      'benchmarkStatus': True} # WebInterface
+
         for epoch in range(1, self.epochs+1):
             avg_weights = []
             for _ in range(self.comm.n_workers):
@@ -48,7 +53,13 @@ class DecentralizedSync(FLUtils):
             new_score = self.validate(epoch)
             stop = self.early_stop(new_score) or epoch == self.epochs
             self.comm.send_workers(stop)
+
+            data['benchmarkProgressBar'] = epoch # WebInterface
+            requests.post('http://localhost:5000/benchmarkProgressBar', json=data) # WebInterface
+            
             if stop:
+                data['benchmarkStatus'] = False # WebInterface
+                requests.post('http://localhost:5000/benchmarkProgressBar', json=data) # WebInterface
                 break
 
 

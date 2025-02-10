@@ -6,6 +6,7 @@ import numpy as np
 from time import time
 from collections import deque
 import json
+import requests # WebInterface
 
 from Utils.MLUtils import MLUtils
 from Utils.CommUtils import CommUtils
@@ -42,13 +43,13 @@ class FLUtils(ABC):
     ):
         self.ml = ml
         self.comm = comm
-        self.epochs = epochs
+        self.epochs = int(epochs)
         self.target_score = target_score
-        self.patience = patience
-        self.delta = delta
+        self.patience = int(patience)
+        self.delta = float(delta)
         self.is_classification = self.ml.loss_name in CLASSIFICATIONS
-        self.metrics  = self.get_metrics(main_metric) # first metric used for early stopping
-        self.buffer = deque(maxlen=patience)
+        self.metrics = self.get_metrics(main_metric) # first metric used for early stopping
+        self.buffer = deque(maxlen=int(patience))
         self.compare_score = None
         self.best_score = None
         self.best_weights = None
@@ -120,6 +121,9 @@ class FLUtils(ABC):
         """
         Create the base path for the results and configure the logging
         """
+
+        requests.get(f'http://localhost:5000/makeFolderBackup?path={self.base_path}') # WebInterface
+
         Path(self.base_path).mkdir(parents=True, exist_ok=True)
         if self.comm.is_master():
             Logger.setup_master(self.base_path)
@@ -193,6 +197,19 @@ class FLUtils(ABC):
         ):
             self.best_score = new_score
             self.best_weights = self.ml.get_weights()
+
+        data: dict = {'totalEpochs': self.epochs,
+                      'epoch': epoch,
+                      'time': delta_time,
+                      'mainMetric': {},
+                      'as': 0,
+                      'f1s': 0} # WebInterface
+        if ('MCC' in metrics): data['mainMetric']['MCC'] = metrics['MCC'] # WebInterface
+        elif ('SMAPE' in metrics): data['mainMetric']['SMAPE'] = metrics['SMAPE'] # WebInterface
+        if ('AS' in metrics): data['as'] = metrics['AS'] # WebInterface
+        if ('F1S' in metrics): data['f1s'] = metrics['F1S'] # WebInterface
+        requests.post('http://localhost:5000/benchmarkMetrics', json=data) # WebInterface
+
         return new_score
 
 
