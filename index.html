@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Federated Learning Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Federated Learning Management</h1>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="showHome()">Home</a></li>
+        <li><a href="#" onclick="showSection('train-section')">Iniciar Treino</a></li>
+        <li><a href="#" onclick="showSection('metrics-section')">Visualizar Métricas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="train-section" class="hidden">
+      <h2>Iniciar Novo Treino</h2>
+      <form id="train-form">
+        <label for="rounds">Número de Rondas:</label>
+        <input type="number" id="rounds" name="rounds" min="1" placeholder="Ex: 10" required>
+
+        <label for="learning-rate">Taxa de Aprendizagem:</label>
+        <input type="number" id="learning-rate" name="learning-rate" step="0.01" placeholder="Ex: 0.01" required>
+
+        <button type="submit">Iniciar Treino</button>
+      </form>
+      <div id="progress-container" class="hidden">
+        <p>Progresso do Treino</p>
+        <progress id="progress-bar" value="0" max="100"></progress>
+      </div>
+    </section>
+
+    <section id="metrics-section" class="hidden">
+      <h2>Métricas do Treino</h2>
+      <div id="metrics">
+        <canvas id="lossChart"></canvas>
+        <canvas id="accuracyChart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Projeto Federated Learning - Desenvolvido por [Seu Nome]</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
